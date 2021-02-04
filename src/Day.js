@@ -1,4 +1,5 @@
 import Hour from "./Hour";
+import styled from "styled-components";
 
 function Day() {
     let hourNum = 12;
@@ -9,11 +10,20 @@ function Day() {
      }
 
     return(
-        <div>
+        <DayColumn>
             <p>Day</p>
             {hours}
-        </div>
+        </DayColumn>
     );
 }
+
+const DayColumn = styled.div`
+    width: 14%; 
+    text-align: center;
+    max-width: 100px;
+
+
+
+`
 
 export default Day;
