@@ -1,14 +1,32 @@
 
 import './App.css';
-import styled from "styled-components";
+import styled, { ThemeContext } from "styled-components";
 
-import Schedule from "./Schedule";
+import Schedule from "./components/Schedule";
+
+import React, {useState} from 'react';
+
 
 function App() {
+
+  const defaultSettings = {
+    startTime: 7,
+    numHours: 12,
+    numDays: 7,
+    military: true
+};
+
+  const [settings, setSettings] = useState(defaultSettings);
+
+
   return (
-    <Layout>
-      <Schedule/>
-    </Layout>
+   
+      <Layout>
+      
+        <Schedule settings={settings}/>
+      </Layout>
+  
+    
   );
 }
 

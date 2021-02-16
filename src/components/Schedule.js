@@ -1,18 +1,22 @@
+import { useContext } from "react";
 import styled from "styled-components";
 import Day from "./Day";
 
-function Schedule() {
 
-    let numDays = 7;
+
+function Schedule({settings}) {
+  
+
+
     let days = [];
 
-    for (let i = 0; i < numDays; i++) {
-       days.push(<Day/>)
+    for (let i = 0; i < settings.numDays; i++) {
+       days.push(<Day settings={settings}/> );
     }
 
     return(
         <ScheduleContainer>
-
+        
        {days}
 
         </ScheduleContainer>
