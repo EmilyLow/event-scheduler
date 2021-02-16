@@ -22,7 +22,7 @@ function Day({settings}) {
 //width: 14%;
 // width: ${(props) => props.width}%;
 const DayColumn = styled.div`
-width: ${(props) => props.width}%;
+    width: ${(props) => props.width}%;
     
     text-align: center;
     max-width: 100px;

@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import styled from "styled-components";
 import Day from "./Day";
+import HourBar from "./HourBar"
 
 
 
@@ -16,8 +17,8 @@ function Schedule({settings}) {
 
     return(
         <ScheduleContainer>
-        
-       {days}
+            <HourBar settings={settings}/>
+            {days}
 
         </ScheduleContainer>
     );
