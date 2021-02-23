@@ -1,6 +1,8 @@
 import Hour from "./Hour";
 import styled from "styled-components";
 
+//!!! Not needed for Grid Version
+
 function Day({settings}) {
     let hourNum = 12;
     let hours = [];
@@ -21,12 +23,9 @@ function Day({settings}) {
 
 //width: 14%;
 // width: ${(props) => props.width}%;
+//text-align: center;
+
 const DayColumn = styled.div`
-    width: ${(props) => props.width}%;
-    
-    text-align: center;
-    max-width: 100px;
-   
 
 
 
