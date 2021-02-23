@@ -5,7 +5,7 @@ function HourLabel({hour, startTime}) {
 
     return(
         <LabelBlock hour={hour}>
-           <p>{hour + startTime}</p>
+           <StyledP>{hour + startTime}</StyledP>
         </LabelBlock>
     );
 }
@@ -24,7 +24,15 @@ const LabelBlock = styled.div`
     grid-row-start: ${(props) => props.hour *4 + 2};
     grid-row-end: span 4;
 
-    border: 1px solid grey;
+    // border: 1px solid grey;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
+
+`
+const StyledP = styled.p`
+    // text-align: center;
+    // margin: 5px 0;
 
 `

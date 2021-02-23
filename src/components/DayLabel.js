@@ -62,8 +62,5 @@ const LabelBlock = styled.div`
 
 const StyledP = styled.p`
     text-align: center;
-    
-    
-   
 
 `

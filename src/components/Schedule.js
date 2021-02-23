@@ -42,7 +42,7 @@ function Schedule({settings}) {
             {/* <HourBar settings={settings}/> */}
             {hours} 
             {dayLabels}
-            {/* {hourLabels} */}
+            {hourLabels}
 
         </ScheduleContainer>
     );
