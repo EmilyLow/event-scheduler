@@ -1,25 +1,40 @@
-import logo from './logo.svg';
+
 import './App.css';
+import styled, { ThemeContext } from "styled-components";
+
+import Schedule from "./components/Schedule";
+
+import React, {useState} from 'react';
+
 
 function App() {
+
+  const defaultSettings = {
+    startTime: 7,
+    numHours: 12,
+    numDays: 7,
+    military: true
+};
+
+  const [settings, setSettings] = useState(defaultSettings);
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+   
+      <Layout>
+      
+        <Schedule settings={settings}/>
+      </Layout>
+  
+    
   );
 }
+
+const Layout = styled.div`
+  margin-left: 50px;
+  margin-top: 80px;
+
+
+`
 
 export default App;
