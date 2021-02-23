@@ -10,7 +10,7 @@ import HourLabel from "./HourLabel";
 function Schedule({settings}) {
   
 
-    //Should I have an array of top days and side hours as well?
+    
     //Also should have an array of events
     //Is there a way to have an "events" component that slots in without having its own parent?
    

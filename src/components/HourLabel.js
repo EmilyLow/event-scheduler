@@ -12,11 +12,7 @@ function HourLabel({hour, startTime}) {
 
 export default HourLabel;
 
-/*
- grid-column: ${(props) => props.day};
-    grid-row: ${(props) => props.hour + 2} / span 4;
 
-    */
 const LabelBlock = styled.div`
 
     grid-column-start: 1;
