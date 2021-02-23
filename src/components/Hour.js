@@ -24,7 +24,9 @@ const HourBlock = styled.div`
     grid-row-start: ${(props) => props.hour *4 + 2};
     grid-row-end: span 4;
 
-    border: 1px solid black;
+    outline: 1px solid gray;
+    margin-top: 1px;
+    margin-left: 1px;
     // background-color: blue;
 
 
