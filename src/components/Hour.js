@@ -5,7 +5,7 @@ function Hour({day, hour}) {
 
     return(
         <HourBlock day={day} hour={hour}>
-           <p>{day}</p>
+          
         </HourBlock>
     );
 }
@@ -19,12 +19,13 @@ export default Hour;
     */
 const HourBlock = styled.div`
 
-    grid-column-start: ${(props) => props.day + 1};
+    grid-column-start: ${(props) => props.day + 2};
     grid-column-end: span 1;
     grid-row-start: ${(props) => props.hour *4 + 2};
     grid-row-end: span 4;
 
     border: 1px solid black;
+    // background-color: blue;
 
 
 `

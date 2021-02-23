@@ -32,6 +32,7 @@ function App() {
 
 const Layout = styled.div`
   margin-left: 50px;
+  margin-top: 80px;
 
 
 `
