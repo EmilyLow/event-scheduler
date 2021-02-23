@@ -16,17 +16,19 @@ function Schedule({settings}) {
     }
 
     return(
-        <ScheduleContainer>
-            <HourBar settings={settings}/>
-            {days}
+        <ScheduleContainer settings={settings}>
+            {/* <HourBar settings={settings}/>
+            {days} */}
 
         </ScheduleContainer>
     );
 }
 
 const ScheduleContainer = styled.div`
-   display: flex;
-   max-width: 700px;
+   display: grid;
+   
+   grid-template-columns: repeat(${(props) => props.settings.numDays +1}, 80px);
+   grid-template-rows: repeat(${(props) => props.settings.numHours * 4 + 2}, 10px);
 
 
 `
