@@ -55,7 +55,9 @@ const LabelBlock = styled.div`
     // background-color: green;
     
 
-   
+    background: 
+    linear-gradient(grey, grey)  bottom left / 1px 50% ;
+   background-repeat:no-repeat;
 
 
 `

@@ -29,6 +29,13 @@ const LabelBlock = styled.div`
     justify-content: center;
     align-items: center;
 
+ 
+    
+
+    background: 
+    linear-gradient(grey, grey) top right / 50% 1px ;
+   background-repeat:no-repeat;
+
 
 `
 const StyledP = styled.p`
