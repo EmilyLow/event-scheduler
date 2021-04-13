@@ -1,40 +1,27 @@
-
-import './App.css';
-import styled, { ThemeContext } from "styled-components";
+import styled from "styled-components";
 
 import Schedule from "./components/Schedule";
 
-import React, {useState} from 'react';
-
-
 function App() {
-
-  const defaultSettings = {
-    startTime: 7,
-    numHours: 12,
-    numDays: 7,
-    military: true
-};
-
-  const [settings, setSettings] = useState(defaultSettings);
-
-
   return (
-   
-      <Layout>
+    <ScheduleDiv>
+        <StyledH1>Convention Schedule</StyledH1>
+        <Schedule/>
       
-        <Schedule settings={settings}/>
-      </Layout>
-  
-    
+      
+    </ScheduleDiv>
   );
 }
 
-const Layout = styled.div`
-  margin-left: 50px;
-  margin-top: 80px;
-
-
-`
-
 export default App;
+
+const StyledH1 = styled.h1`
+  margin-bottom: 30px;
+
+`;
+
+const ScheduleDiv = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
