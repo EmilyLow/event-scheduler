@@ -1,6 +1,6 @@
 let testData = {
 
-    settings: {
+    settings: { 
         dayNum: 3,
         hourNum: 13,
         startHour: 9,
