@@ -2,32 +2,14 @@ import styled from "styled-components";
 import axios from 'axios';
 import { useEffect, useState } from "react";
 
-import testDataDates from "../testDataDates";
+
 import Event from "./Event";
 
-function Schedule() {
+function Schedule(props) {
 
-    const [eventsList, setEventsList] = useState([]);
-
-    const url = 'http://localhost:3001/events';
-
-  useEffect(() => {
-    getEvents();
-
-  }, []);
-
+    let {settings, eventsList} = props;
   
-
-  const getEvents = () => {
-    axios.get(url)
-    .then((response => {
-
-      setEventsList(response.data);
-      console.log(eventsList);
-
-    }))
-    .catch(error => console.error(`Error: ${error}`))
-  }
+    // console.log(eventsList[0]);
 
     const days = [
         'Sun',
@@ -42,8 +24,7 @@ function Schedule() {
     
     let hours = [];
 
-    let {settings} = testDataDates;
-  
+   
     for (let i = 0; i < settings.dayNum; i++) {
        for (let j = 0; j < settings.hourNum; j++) {
            //Note! Changing from 0 start to 1 start here.
@@ -67,15 +48,16 @@ function Schedule() {
         }
     }
 
+   
 
-    //Check overlap function
-    //Give column based on overlap
-    //Maybe give a length property based off of number of rows?
-    // console.log("Settings:", settings)
+ 
 
     let dayLabels = [];
-    let labelDate = settings.startDate;
-    // console.log(labelDate);
+
+    
+    
+    let labelDate = new Date(settings.startDate.getTime());
+
     for(let i = 0; i < settings.dayNum; i++) {
         // console.log("No changes" + labelDate);
         
@@ -106,9 +88,6 @@ function Schedule() {
             {dayLabels}
             {hourLabels}
             {hours}
-            {/* {testDataDates.events.map(listing => {
-                return <Event key = {listing.name + listing.startTime.getTime() + listing.endTime.getTime() + listing.startCol} details = {listing}/>;
-            })} */}
              {eventsList.map(listing => { 
                     return <Event key = {listing.id} details = {listing}/>;
                  })}

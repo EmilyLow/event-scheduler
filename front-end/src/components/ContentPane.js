@@ -11,7 +11,10 @@ import Subject from '@material-ui/icons/Subject';
 
 // <Divider style={{width:'100%'}} light/>
 
-function ContentPane({details}) {
+function ContentPane({details, startTimeValue, endTimeValue}) {
+    // console.log("Content Pane,", details);
+    // console.log("startTimeValue", startTimeValue);
+    // console.log("endTimeValue", endTimeValue);
 
     function militaryToStan (milHour, minutes) {
         let minString = minutes;
@@ -37,9 +40,9 @@ function ContentPane({details}) {
     ];
 
 
-    const formattedStart = militaryToStan(details.startTime.getHours(), details.startTime.getMinutes());
-    const formattedEnd = militaryToStan(details.endTime.getHours(), details.endTime.getMinutes());
-    const formattedDate = "" + days[details.startTime.getDay()] + ", " +(details.startTime.getMonth() + 1) + "/" + details.startTime.getDate() + "/" + details.startTime.getFullYear();
+    const formattedStart = militaryToStan(startTimeValue.getHours(), startTimeValue.getMinutes());
+    const formattedEnd = militaryToStan(endTimeValue.getHours(), endTimeValue.getMinutes());
+    const formattedDate = "" + days[startTimeValue.getDay()] + ", " +(startTimeValue.getMonth() + 1) + "/" + startTimeValue.getDate() + "/" + startTimeValue.getFullYear();
     const formattedTime = formattedStart + " to " + formattedEnd + ", " + formattedDate;
 
 
