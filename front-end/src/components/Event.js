@@ -2,6 +2,7 @@ import styled from "styled-components";
 import Popover from '@material-ui/core/Popover';
 import React from "react";
 import Card from '@material-ui/core/Card';
+
 import ContentPane from "./ContentPane";
 
 import { makeStyles } from "@material-ui/core/styles";
@@ -13,15 +14,8 @@ const useStyles = makeStyles((theme) => ({
   }));
   
 
-function Event({details}) {
+function Event({details, settings, deleteEvent}) {
 
-
-
-  // let details.start_time = new Date(details.start_time);
-  // let details.end_time = new Date(details.end_time);
-
-  // console.log("Details: ", details);
-  // console.log("details.start_time " + details.start_time);
 
 
     let startTimeValue = details.start_time.getHours() +(details.start_time.getMinutes() /60);
@@ -45,7 +39,7 @@ function Event({details}) {
 
     return(
       
-        <EventStyle details={details} startTimeValue = {startTimeValue} endTimeValue = {endTimeValue} length = {length}>
+        <EventStyle details={details} startTimeValue = {startTimeValue} endTimeValue = {endTimeValue} length = {length} startHour = {settings.startHour}>
             <Label onClick={handleClick}>{details.event_name}</Label>
             <Popover
           id={id}
@@ -64,7 +58,7 @@ function Event({details}) {
             style: { width: '300px' },
           }}
         >
-            <ContentPane details = {details} startTimeValue = {details.start_time} endTimeValue = {details.end_time}/>
+            <ContentPane details = {details} startTimeValue = {details.start_time} endTimeValue = {details.end_time} deleteEvent={deleteEvent}/>
                
          
         </Popover>
@@ -75,7 +69,7 @@ function Event({details}) {
 
 const EventStyle = styled.div`
     grid-column: ${(props) => props.details.start_col} / span ${(props) => props.details.span};
-    grid-row: ${(props) => (props.startTimeValue -9) * 4 + 2} / span ${(props) => (props.length * 4)};
+    grid-row: ${(props) => (props.startTimeValue - props.startHour) * 4 + 2} / span ${(props) => (props.length * 4)};
     background-color: ${(props) => props.details.color};
 
     display: flex;
@@ -88,6 +82,8 @@ const EventStyle = styled.div`
   
 `;
 
+//TODO: Fix overflow. I think it isn't working because it has a seperate div from event? Or a seperate height at least because I made the height bigger for more clickable area. 
+//I think it wouldn't push it past the bottom if wasn't doing the height workaround
 //NOTE: width and height are placed at 100% to help with pop-over clicking.
 //This may cause placement weirdness. 
 //This was necessary because popover does not work if it's inside the element that's triggering it (e.g. EventStyle)
@@ -96,6 +92,9 @@ const Label = styled.p`
   text-align: center;
   width: 100%;
   height: 100%;
+
+  overflow: hidden;
+  overflow-y: hidden
   
 
 `;

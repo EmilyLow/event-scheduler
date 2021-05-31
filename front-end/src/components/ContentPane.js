@@ -8,14 +8,12 @@ import Typography from '@material-ui/core/Typography';
 import Location from '@material-ui/icons/LocationOn';
 import PeopleAlt from '@material-ui/icons/PeopleAlt';
 import Subject from '@material-ui/icons/Subject';
+import Button from "@material-ui/core/Button";
 
 // <Divider style={{width:'100%'}} light/>
 
-function ContentPane({details, startTimeValue, endTimeValue}) {
-    // console.log("Content Pane,", details);
-    // console.log("startTimeValue", startTimeValue);
-    // console.log("endTimeValue", endTimeValue);
-
+function ContentPane({details, startTimeValue, endTimeValue, deleteEvent}) {
+    
     function militaryToStan (milHour, minutes) {
         let minString = minutes;
         if(minString === 0) {
@@ -45,10 +43,13 @@ function ContentPane({details, startTimeValue, endTimeValue}) {
     const formattedDate = "" + days[startTimeValue.getDay()] + ", " +(startTimeValue.getMonth() + 1) + "/" + startTimeValue.getDate() + "/" + startTimeValue.getFullYear();
     const formattedTime = formattedStart + " to " + formattedEnd + ", " + formattedDate;
 
+    function deleteAction() {
+        deleteEvent(details);
+    }
 
     return(<EventDiv>
         <Grid container>
-             <Grid item xs={12}> <Typography variant={'h5'}>{details.name}</Typography> </Grid>
+             <Grid item xs={12}> <Typography variant={'h5'}>{details.event_name}</Typography> </Grid>
              <Grid item xs={12}><Typography variant={'subtitle1'}> {formattedTime}</Typography> </Grid>
 
              <Grid item xs={12}> <Divider style={{marginBottom:'8px'}} /> </Grid>
@@ -63,7 +64,7 @@ function ContentPane({details, startTimeValue, endTimeValue}) {
 
             { details.summary !== "" && <Grid item xs = {2}><Subject/> </Grid>}
             { details.summary !== "" && <Grid item xs = {10}><Typography variant = {'body1'}>{details.summary}</Typography></Grid>}
-            
+           <Grid><Button item xs = {4} variant="outlined" onClick={() => { deleteAction() }}>Delete</Button></Grid> 
         </Grid>
             
     </EventDiv>)

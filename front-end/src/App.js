@@ -13,58 +13,136 @@ function App() {
     dayNum: 3,
     hourNum: 13,
     startHour: 9,
-    startDate: new Date(2021, 4, 7)
+    startDate: new Date(2021, 6, 7)
   });
  
-  
-
   const [eventsList, setEventsList] = useState([]);
 
-  const url = 'http://localhost:3001/events';
+
+  const url = 'http://localhost:3001';
 
   useEffect(() => {
     getEvents();
-
+    getSettings();
 
   }, []);
+
+ 
+  useEffect(() => {
+    triggerSettingsReorder();
+  }, [settings]);
 
 //!Why this does't work feels worth figuring out for later
 //   useEffect(() => {
 //       console.log(eventsList);
 //   }, eventsList);
 
+ const getSettings = () => {
+   axios.get(url + "/settings")
+   .then((response => {
+    
+     //Note, not sure what to do about settings id, if it's best to always use 1
+     let newSettings = {
+      id: response.data[0].id,
+      dayNum: response.data[0].day_number,
+      hourNum: response.data[0].hour_number,
+      startHour: response.data[0].start_hour,
+      startDate: new Date(response.data[0].start_date)
+     }
+    
+     setSettings(newSettings);
+   
+   }))
+   .catch(error => console.error(`Error: ${error}`))
+ }
+
+ const updateSettings =  (newSettings) => {
+
+ 
+  let id = newSettings.id;
+
+  let renamed = {
+    id: id,
+    day_number: newSettings.dayNum,
+    hour_number: newSettings.hourNum,
+    start_hour: newSettings.startHour,
+
+    start_date: newSettings.startDate
+  }
+
+  axios.put(url + "/settings/" + id, renamed)
+  .then(  (response) => {
+
+    //Maybe not best practice (since I'm using existing var and not return).
+     setSettings(newSettings);
+
+  })
+  .catch(error => console.error(`Error: ${error}`))
+
+ };
+
 const getEvents = () => {
   
-  axios.get(url)
+  axios.get(url + "/events")
   .then((response => {
 
     setEventsList(convertToDate(response.data));
-
       
   }))
   .catch(error => console.error(`Error: ${error}`))
 }
 
+ const getWithoutUpdate = async () => {
+
+   let results;
+
+   await axios.get(url + "/events")
+   .then((response) => {
+
+    results = response.data;
+   })
+   .catch(error => console.error(`Error: ${error}`))
+
+   return results;
+ }
+
+ const deleteWithoutUpdate = async (event) => {
+  let id = event.id;
+
+  axios.delete(url + "/events/" + id)
+  .then(() => {
+    //Does it need to return something, to show it's done?
+    return 1; 
+  })
+   .catch(error => console.error(`Error: ${error}`))
+ }
+
  //This creates a promise to update the event, and does not actually update it directly. 
  const updateEvent = (event) => {
    let id = event.id;
+   
 
-  return axios.put(url + "/" + id, event)
+  return axios.put(url + "/events/" + id, event)
    .then((response) => {
 
    })
    .catch(error => console.error(`Error: ${error}`))
  }
 
-//TODO: Randomize color
+ const deleteEvent = (event) => {
+  //  console.log("Delete", event);
+   let id = event.id;
+
+   axios.delete(url + "/events/" + id)
+   .then((response) => {
+    triggerDeleteReorder(event);
+   })
+   .catch(error => console.error(`Error: ${error}`))
+ }
+
+
  const  addEvent = (event) => {
  
-
-
-  let formStart =  localStringToUTCString(event.start_time).replace('T', ' ');
-  let formEnd = localStringToUTCString(event.end_time).replace('T', ' ');
-
-  
 
   let formEvent = {
     event_name: event.title,
@@ -72,21 +150,21 @@ const getEvents = () => {
     speaker: event.speaker,
     summary: event.description,
     location: event.location,
-    start_time: formStart,
-    end_time: formEnd,
-    color: "#ffec6e" //yellow, !Randomize later
+    start_time: event.start_time,
+    end_time: event.end_time,
+    color: getRandomColor()
   };
 
-  axios.post(url, formEvent)
+  axios.post(url + "/events", formEvent)
   .then((response => {
+    
     triggerReorder(response.data);
-    getEvents();
   }))
   .catch(error => console.error(`Error: ${error}`))
 }
 
 
-
+  
    function  triggerReorder(newEvent) {
    
 
@@ -100,7 +178,7 @@ const getEvents = () => {
   
 
     let  promises = organized.map(async event => {
-
+ 
       return await updateEvent(event);;
     })
 
@@ -109,6 +187,145 @@ const getEvents = () => {
       getEvents();
     })
 
+  }
+
+  async function triggerSettingsReorder() {
+    let conditionsMet = true;
+
+
+
+
+    if(conditionsMet) {
+
+      let winnowedList = await checkAndDeleteEvents(eventsList);
+
+      let organized = reorganizeAll(winnowedList);
+
+
+     
+
+ 
+      //Update all
+
+      let  promises = organized.map(async event => {
+ 
+        return await updateEvent(event);;
+      })
+  
+      Promise.all(promises)
+      .then(() => {
+        getEvents();
+      })
+    }
+
+
+  }
+
+  //Checks and deletes dates that are out of bounds
+  async function checkAndDeleteEvents(initList) {
+
+
+    let finalList = []
+    
+    for(let i = 0; i < initList.length; i++) {
+        let cEvent = initList[i];
+
+        if(checkInBounds(cEvent)) {
+          finalList.push(cEvent);
+        } else {
+          await deleteWithoutUpdate(cEvent);
+
+        }
+
+
+    }
+
+    return finalList;
+
+  }
+
+  
+
+  //Reorganizes all dates
+  function reorganizeAll(unorganizedList) {
+    let startDate = new Date(settings.startDate);
+    let allEvents = [];
+    for(let i = 0; i <settings.dayNum; i++) {
+      let currentDate = new Date(startDate);
+      currentDate.setDate(startDate.getDate() + i);
+
+      let eventSubset = getEventsOnDay(unorganizedList, currentDate);
+      let organizedSubset = organizeEvents(eventSubset);
+
+      allEvents = [...allEvents, ...organizedSubset];
+    }
+
+    return allEvents;
+  }
+
+
+  function checkInBounds(event) {
+
+
+
+    let startTime = event.start_time.getHours() + (event.start_time.getMinutes() / 60);
+    let endTime = event.end_time.getHours() + (event.end_time.getMinutes() / 60);
+
+    let scheduledStart = settings.startHour;
+
+    let scheduledEnd = settings.startHour + settings.hourNum;
+
+
+    //Checks if the hours of the day are in bounds
+    if(startTime < scheduledStart || endTime < scheduledStart) {
+      return false;
+    } else if (startTime > scheduledEnd || endTime > scheduledEnd) {
+      return false; 
+    }
+
+
+  let startDate = new Date(event.start_time);
+  let endDate = new Date(event.end_time);
+
+  let scheduleStartDay = new Date(settings.startDate);
+  scheduleStartDay.setHours(0);
+  scheduleStartDay.setMinutes(0);
+
+  let scheduleEndDay = new Date(scheduleStartDay);
+  //This is 0 AM on the day after
+  scheduleEndDay.setDate(scheduleStartDay.getDate() + settings.dayNum);
+
+
+  
+    if(startDate < scheduleStartDay || endDate < scheduleStartDay) {
+      console.log("False 3");
+      return false;
+    } else if(startDate > scheduleEndDay || endDate > scheduleEndDay) {
+
+      return false;
+    }
+
+
+    return true;
+  }
+
+  async function triggerDeleteReorder(deletedEvent) {
+    
+    let remainingEvents =  await getWithoutUpdate();
+    let formRemainingEvents = convertToDate(remainingEvents);
+    
+    let remainingOnDay = getEventsOnDay(formRemainingEvents, deletedEvent.start_time);
+
+    let organized = organizeEvents(remainingOnDay);
+
+    let promises = organized.map(async event => {
+      return await updateEvent(event);
+    })
+
+    Promise.all(promises)
+    .then(() => {
+      getEvents();
+    })
   }
 
   function localStringToUTCString(localString) {
@@ -137,12 +354,18 @@ const convertToDate = (rawEvents) => {
   return postEvents;
 }
 
-  //TODO: Currently only works if < 5 events. Need to add case for > 5 intersections. 
+  //Note, assumes all events are on a single day
   function organizeEvents(rawEvents) {
+
+    if(rawEvents.length === 0) {
+      return [];
+    }
 
    
     let dayNum = dateDiff(settings.startDate, rawEvents[0].start_time);
+
     let colOffset = 2;
+    
     let baseColumn = dayNum * 12 + colOffset;
 
     let cleanEvents = [];
@@ -171,7 +394,19 @@ const convertToDate = (rawEvents) => {
             cleanEvents[i].start_col = baseColumn;
             addedEvents.push(cleanEvents[i]);
         } else {
-            let defaultSpan = 12/(intIndex.length +1);
+            let defaultSpan;
+            if(intIndex.length < 4) {
+              defaultSpan = 12/(intIndex.length +1);
+            } else if (intIndex.length < 6) {
+              defaultSpan = 2;
+            } else if (intIndex.length < 12) {
+              defaultSpan = 1;
+            } else {
+              defaultSpan = 0;
+              console.log("Error: No more than twelve events can intersect.");
+            }
+            
+
              //Add new event to addedEvents, and add it's index to the list of intersections
              //Once the current event is added, it is now one of the intersecting events
              addedEvents.push(cleanEvents[i]);
@@ -216,7 +451,7 @@ const convertToDate = (rawEvents) => {
                         
                     } else if (x === slots.length -1) {
                         console.log("Error, found no open slot");
-                        // console.log("Erorr on: ", intEvent);
+                     
                         intEvent.start_col = origCol;
                     } else {
                         intEvent.start_col = origCol;
@@ -307,11 +542,13 @@ const convertToDate = (rawEvents) => {
 
     return Math.round((secondCopy-firstCopy)/(1000*60*60*24));
 }
+
  function getEventsOnDay(rawEvents, targetDate) {
   let month = targetDate.getMonth();
   let date = targetDate.getDate();
 
 
+ //Currently a promise
   let eventsOnDay = [];
 
   rawEvents.forEach(event => {
@@ -326,17 +563,24 @@ const convertToDate = (rawEvents) => {
   return eventsOnDay;
 }
 
+ function getRandomColor() {
+   let colors = ["#ffb3ba", "#ffdfba", "#ffffba", "#baffc9", "#bae1ff" ];
+
+   let num = Math.floor(Math.random() * colors.length);
+
+   return colors[num];
+ }
 
 
   return (
     <LayoutDiv>
       <ScheduleDiv>
         <StyledH1>Convention Schedule</StyledH1>
-        <Schedule settings = {settings} eventsList = {eventsList}/>
+        <Schedule settings = {settings} eventsList = {eventsList} deleteEvent={deleteEvent}/>
       </ScheduleDiv>
       <FormDiv>
-        <SettingsForm setSettings={setSettings} />
-        <InputForm addEvent = {addEvent}/>
+        <SettingsForm settings = {settings} updateSettings = {updateSettings} />
+        <InputForm addEvent = {addEvent} settings={settings}/>
       </FormDiv>
       
     </LayoutDiv>
