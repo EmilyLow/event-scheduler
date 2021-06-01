@@ -1,12 +1,11 @@
-import React, { useRef } from "react";
-import styled from "styled-components";
+import React from "react";
 import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core';
 
 import {Controller, useForm,} from "react-hook-form";
+import { findAllByTestId } from "@testing-library/dom";
 
 
 const useStyles = makeStyles(theme => ({
@@ -14,6 +13,7 @@ const useStyles = makeStyles(theme => ({
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'center',
+      width: `100%`,
    
       padding: theme.spacing(2)
     },
@@ -36,15 +36,6 @@ function InputForm(props) {
       addEvent(data);
     }
 
- function testVal(v) {
-   console.log("Testval", v);
-   return true;
- }
-
- function testDate(v) {
-   console.log("Testdate", v);
-   return true;
- }
 
  //Checks whether the given input is within the range given by the settings.
  function checkInputRange(sDate) {
@@ -66,6 +57,29 @@ function InputForm(props) {
   else {
     return false;
   }
+ }
+
+ function allowedTime(iDate) {
+
+
+  let fDate = new Date(iDate);
+
+
+  let eventTime = fDate.getHours() + (fDate.getMinutes() / 60);
+
+
+  let scheduledStart = settings.startHour;
+ 
+
+  let scheduledEnd = settings.startHour + settings.hourNum;
+
+
+  if(scheduledStart <= eventTime && scheduledEnd >= eventTime) {
+    return true;
+  } else {
+    return false;
+  }
+
  }
 
  function checkEventLength(sDate) {
@@ -106,6 +120,18 @@ function InputForm(props) {
   }
  }
 
+ function checkFifteen(sDate) {
+  let fDate = new Date(sDate);
+  let  minutes = fDate.getMinutes();
+
+  if(minutes === 0 || minutes%15 === 0) {
+    return true;
+  } else {
+    return false;
+  }
+
+ }
+
     return(
        
             
@@ -132,7 +158,7 @@ function InputForm(props) {
         <Controller
             name="start_time"
             control={control}
-            defaultValue="2021-05-07T10:30"
+            defaultValue="2021-05-07T10:00"
             render={({ field: { onChange, value }, fieldState: { error } }) => (
           <TextField
             label="Start Time"
@@ -144,7 +170,11 @@ function InputForm(props) {
             helperText={error ? error.message : null}
           />
             )}
-            rules={{ validate: v => checkInputRange(v) || "Date outside selected range."}}
+            rules={{ validate: { range: v => checkInputRange(v) || "Date outside selected range.", 
+                      time: v => allowedTime(v) || "Time outside chosen range",
+                      fifteen: v => checkFifteen(v)|| "Time must be in fifteen minute intervals."}
+                    
+                    }}
             />
 
     <Controller
@@ -167,7 +197,9 @@ function InputForm(props) {
                inBounds: v => checkInputRange(v) || "Date outside selected range.",
                eventLength: v => checkEventLength(v) || "Event must be greater than 30 minutes.",
                inOrder: v => checkInOrder(v) || "Start time must be before end time.",
-               sameDay: v => checkSingleDay(v) || "Event must start and end on same day."
+               sameDay: v => checkSingleDay(v) || "Event must start and end on same day.",
+               time: v => allowedTime(v) || "Time outside chosen range",
+               fifteen: v => checkFifteen(v)|| "Time must be in fifteen minute intervals."
               }}
            } 
             />

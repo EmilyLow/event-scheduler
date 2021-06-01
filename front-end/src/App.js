@@ -32,16 +32,12 @@ function App() {
     triggerSettingsReorder();
   }, [settings]);
 
-//!Why this does't work feels worth figuring out for later
-//   useEffect(() => {
-//       console.log(eventsList);
-//   }, eventsList);
 
  const getSettings = () => {
    axios.get(url + "/settings")
    .then((response => {
     
-     //Note, not sure what to do about settings id, if it's best to always use 1
+     
      let newSettings = {
       id: response.data[0].id,
       dayNum: response.data[0].day_number,
@@ -111,7 +107,6 @@ const getEvents = () => {
 
   axios.delete(url + "/events/" + id)
   .then(() => {
-    //Does it need to return something, to show it's done?
     return 1; 
   })
    .catch(error => console.error(`Error: ${error}`))
@@ -130,7 +125,7 @@ const getEvents = () => {
  }
 
  const deleteEvent = (event) => {
-  //  console.log("Delete", event);
+
    let id = event.id;
 
    axios.delete(url + "/events/" + id)
@@ -200,12 +195,6 @@ const getEvents = () => {
       let winnowedList = await checkAndDeleteEvents(eventsList);
 
       let organized = reorganizeAll(winnowedList);
-
-
-     
-
- 
-      //Update all
 
       let  promises = organized.map(async event => {
  
@@ -328,13 +317,6 @@ const getEvents = () => {
     })
   }
 
-  function localStringToUTCString(localString) {
-
-    let dateObject = new Date(localString);
-    let utcString = dateObject.toISOString();
-
-    return utcString;
-}
 
 
 
@@ -360,6 +342,7 @@ const convertToDate = (rawEvents) => {
     if(rawEvents.length === 0) {
       return [];
     }
+
 
    
     let dayNum = dateDiff(settings.startDate, rawEvents[0].start_time);
@@ -575,7 +558,7 @@ const convertToDate = (rawEvents) => {
   return (
     <LayoutDiv>
       <ScheduleDiv>
-        <StyledH1>Convention Schedule</StyledH1>
+        <StyledH1>Event Scheduler</StyledH1>
         <Schedule settings = {settings} eventsList = {eventsList} deleteEvent={deleteEvent}/>
       </ScheduleDiv>
       <FormDiv>
@@ -604,6 +587,7 @@ const FormDiv = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-left: 50px;
 `;
 
 const LayoutDiv = styled.div`
