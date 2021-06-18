@@ -56,7 +56,6 @@ async function updateEvent(newEvent, id) {
    
 
     try {
-        const event = await db('events').where({id}).first();
 
         await db('events').where({id}).update(newEvent);
 

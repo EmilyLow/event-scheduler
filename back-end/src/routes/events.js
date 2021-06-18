@@ -26,17 +26,18 @@ router.get('/id/:id', async function(req, res, next) {
 
 });
 
+//This should actually be a query string
 //?Is this the correct way to do it, when you have things besides ids?
-router.get('/date/:date', async function(req, res, next) {
-    const date = req.params.date;
-    // console.log("back-end date", date);
-    try {
-        res.json(await Events.findByDate(date));
-    } catch(err) {
-        //Need to fix this? Or add something elsewhere?
-        next(err);
-    }
-});
+// router.get('/date/:date', async function(req, res, next) {
+//     const date = req.params.date;
+//     // console.log("back-end date", date);
+//     try {
+//         res.json(await Events.findByDate(date));
+//     } catch(err) {
+//         //Need to fix this? Or add something elsewhere?
+//         next(err);
+//     }
+// });
 
 router.put('/:id', async (req, res, next) => {
     const id = req.params.id;
